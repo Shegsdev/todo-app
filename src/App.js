@@ -6,12 +6,34 @@ import './App.css';
 function App() {
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState('');
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [showInput, setShowInput] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState(null);
   const [showDeletePrompt, setShowDeletePrompt] = useState(false);
   const [filteredTodos, setFilteredTodos] = useState(() => todos);
 
   const inputEl = useRef();
+
+  useEffect(() => {
+    const fetchTodos = async () => {
+      try {
+        const response = await fetch('https://jsonplaceholder.typicode.com/todos');
+        if (!response.ok) {
+          throw new Error('Error fetching todos');
+        }
+        const data = await response.json();
+        setTodos(data.slice(0, 10));
+        setLoading(false);
+      } catch (error) {
+        console.log(error)
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+
+    fetchTodos();
+  }, []);
 
   useEffect(() => {
     setFilteredTodos(todos)
@@ -30,14 +52,15 @@ function App() {
     if (newTodo.trim() !== '') {
       const todo = {
         id: uuidv4(),
-        text: newTodo,
+        title: newTodo,
         completed: false,
         date: new Date().toDateString()
       };
       setTodos((todos) => {
-        return [...todos, todo]
+        return [todo, ...todos]
       });
       setNewTodo('');
+      setError(false);
     }
   };
 
@@ -52,10 +75,13 @@ function App() {
   };
 
   const handleSelect = (id) => {
-    if (selectedTodo !== id) setSelectedTodo(id);
-    else setSelectedTodo(null);
-
-    setShowDeletePrompt(!showDeletePrompt);
+    if (selectedTodo !== id) {
+      setSelectedTodo(id);
+      setShowDeletePrompt(true);
+    } else {
+      setSelectedTodo(null);
+      setShowDeletePrompt(false);
+    }
   };
 
   const removeTodo = (id) => {
@@ -102,37 +128,51 @@ function App() {
         </span>
       </div>
 
-      { todos.length > 0 && (
+      { (todos.length > 0 && !loading) && (
       <div className="filters">
         <button onClick={() => filterTodos('all')}>All</button>
         <button onClick={() => filterTodos('active')}>Active</button>
         <button onClick={() => filterTodos('completed')}>Completed</button>
       </div>)}
 
-      <ul className="todos">
-        {filteredTodos.map(todo => (
-          <Fragment key={todo.id}>
-            <div
-              className={classNames("delete-todo", { show: (selectedTodo === todo.id) && showDeletePrompt })}
-              onClick={() => handleSelect(todo.id)}
-            >
-              <span onClick={() => removeTodo(todo.id)}>🗑 Delete</span>
-              </div>
+      {loading ? (
+        <div className="loader-wrapper">
+          <div className="loading-indicator"></div>
+        </div>
+      ) : error ? (
+        <div className="error-message">{error}</div>
+      ) : (
+        <ul className="todos">
+          {filteredTodos.map(todo => (
             <li
-              className={classNames({ completed: todo.completed })}
+              key={todo.id}
               onClick={() => handleSelect(todo.id)}
             >
-              <span>{todo.text}</span>
+              <div
+                className={classNames("delete-todo", { show: (selectedTodo === todo.id) && showDeletePrompt })}
+                onClick={() => handleSelect(todo.id)}
+              >
+                <span onClick={() => removeTodo(todo.id)}>🗑 Delete</span>
+                <span>Cancel</span>
+              </div>
+              <span
+                className={classNames({
+                  hidden: (selectedTodo === todo.id) && showDeletePrompt,
+                  completed: todo.completed
+                })}
+              >
+                {todo.title}
+              </span>
               <button
-                className={classNames("btn-todo_complete", { completed: todo.completed })}
+                className={classNames("btn-todo_complete", { completed: todo.completed, hidden: (selectedTodo === todo.id) && showDeletePrompt })}
                 onClick={(e) => toggleTodo(e, todo.id)}
               >
                 ✔
               </button>
             </li>
-          </Fragment>
-        ))}
-      </ul>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
