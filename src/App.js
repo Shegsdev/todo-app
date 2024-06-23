@@ -1,4 +1,4 @@
-import React, { Fragment, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
 import './App.css';
@@ -9,8 +9,13 @@ function App() {
   const [showInput, setShowInput] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState(null);
   const [showDeletePrompt, setShowDeletePrompt] = useState(false);
+  const [filteredTodos, setFilteredTodos] = useState(() => todos);
 
   const inputEl = useRef();
+
+  useEffect(() => {
+    setFilteredTodos(todos)
+  }, [todos]);
 
   const handleChange = (event) => {
     setNewTodo(event.target.value);
@@ -57,6 +62,20 @@ function App() {
     setTodos(todos.filter(todo => todo.id !== id));
   };
 
+  const filterTodos = (filter) => {
+    switch (filter) {
+      case 'active':
+        setFilteredTodos(todos.filter(todo => !todo.completed));
+        break;
+      case 'completed':
+        setFilteredTodos(todos.filter(todo => todo.completed));
+        break;
+      default:
+        setFilteredTodos(todos);
+        break;
+    }
+  };
+
   return (
     <div className="todoapp">
       <header>
@@ -82,8 +101,16 @@ function App() {
           { showInput && newTodo ? 'Add' : 'New'}
         </span>
       </div>
+
+      { todos.length > 0 && (
+      <div className="filters">
+        <button onClick={() => filterTodos('all')}>All</button>
+        <button onClick={() => filterTodos('active')}>Active</button>
+        <button onClick={() => filterTodos('completed')}>Completed</button>
+      </div>)}
+
       <ul className="todos">
-        {todos.map(todo => (
+        {filteredTodos.map(todo => (
           <Fragment key={todo.id}>
             <div
               className={classNames("delete-todo", { show: (selectedTodo === todo.id) && showDeletePrompt })}

@@ -36,6 +36,28 @@ header {
   text-transform: uppercase;
 }
 
+.todoapp .filters {
+  display: flex;
+  justify-content: center;
+  gap: 0.5em;
+  margin: 20px 0;
+}
+
+.todoapp .filters button {
+  background-color: #eee;
+  border: 1px solid #333;
+  cursor: pointer;
+  font-family: Ardent;
+  font-size: 14px;
+  padding: 1em;
+  transition: background 300ms ease-in;
+  width: 90px;
+}
+
+.todoapp .filters button:focus {
+  background-color: rgb(204, 177, 25);
+}
+
 .todoapp h1 {
   font-size: 48px;
   font-weight: 500;
@@ -117,7 +139,7 @@ input[type="text"].show {
 
 input[type="text"]:focus {
   outline: none;
-  border-color: dodgerblue;
+  border-color: gold;
 }
 
 .todoapp .form {
