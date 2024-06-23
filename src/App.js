@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { Fragment, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
 import './App.css';
@@ -7,6 +7,8 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState('');
   const [showInput, setShowInput] = useState(false);
+  const [selectedTodo, setSelectedTodo] = useState(null);
+  const [showDeletePrompt, setShowDeletePrompt] = useState(false);
 
   const inputEl = useRef();
 
@@ -34,12 +36,25 @@ function App() {
     }
   };
 
-  const toggleTodo = (id) => {
+  const toggleTodo = (e, id) => {
+    e.stopPropagation();
+
     setTodos(
       todos.map(todo =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
     );
+  };
+
+  const handleSelect = (id) => {
+    if (selectedTodo !== id) setSelectedTodo(id);
+    else setSelectedTodo(null);
+
+    setShowDeletePrompt(!showDeletePrompt);
+  };
+
+  const removeTodo = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
   };
 
   return (
@@ -69,19 +84,26 @@ function App() {
       </div>
       <ul className="todos">
         {todos.map(todo => (
-          <li
-            key={todo.id}
-            className={classNames({ completed: todo.completed })}
-            onClick={() => {}}
-          >
-            <span>{todo.text}</span>
-            <button
-              className={classNames("btn-todo_complete", { completed: todo.completed })}
-              onClick={() => toggleTodo(todo.id)}
+          <Fragment key={todo.id}>
+            <div
+              className={classNames("delete-todo", { show: (selectedTodo === todo.id) && showDeletePrompt })}
+              onClick={() => handleSelect(todo.id)}
             >
-              ✔
-            </button>
-          </li>
+              <span onClick={() => removeTodo(todo.id)}>🗑 Delete</span>
+              </div>
+            <li
+              className={classNames({ completed: todo.completed })}
+              onClick={() => handleSelect(todo.id)}
+            >
+              <span>{todo.text}</span>
+              <button
+                className={classNames("btn-todo_complete", { completed: todo.completed })}
+                onClick={(e) => toggleTodo(e, todo.id)}
+              >
+                ✔
+              </button>
+            </li>
+          </Fragment>
         ))}
       </ul>
     </div>
