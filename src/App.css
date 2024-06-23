@@ -4,25 +4,57 @@
   src: url(./assets/fonts/AdventPro-Regular.ttf);
 }
 
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   background-color: #1c1c1c;
   color: #eee;
   font-family: Ardent;
   text-align: center;
-  margin: 20px;
 }
 
 header {
-  margin-bottom: 40px;
+  margin-bottom: 10px;
+  padding: 30px;
+}
+
+.container {
+  background-color: transparent;
+  padding: 20px;
+}
+
+.hidden {
+  visibility: hidden;
 }
 
 .todoapp {
   max-width: 450px;
   margin: 0 auto;
-  background-color: #1c1c1c;
-  padding: 20px;
-  border-radius: 8px;
+  background-color: #000;
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+.todoapp::-webkit-scrollbar {
+  display: contents;
+  opacity: 0;
+  width: 5px;
+  height: 5px;
+}
+
+.todoapp::-webkit-scrollbar-thumb {
+    background: rgba(255, 217, 0, 0.11);
+    border-radius: 10px;
+}
+
+.todoapp:hover::-webkit-scrollbar-thumb {
+    background: gold;
+}
+
+.todoapp:hover::-webkit-scrollbar {
+    display: block;
 }
 
 .todoapp .date {
@@ -41,6 +73,7 @@ header {
   justify-content: center;
   gap: 0.5em;
   margin: 20px 0;
+  padding: 30px;
 }
 
 .todoapp .filters button {
@@ -65,6 +98,34 @@ header {
   text-align: left;
 }
 
+.todoapp .loader-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.todoapp .loading-indicator {
+  margin-top: 20px;
+  text-align: center;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid gold;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+.todoapp .error-message {
+  margin-top: 20px;
+  text-align: center;
+  color: #f17f7f;
+}
+
 .todos {
   list-style-type: none;
   padding: 0;
@@ -72,21 +133,23 @@ header {
 }
 
 .todos .delete-todo {
-  background-color: #29212182;
+  background-color: #38141482;
   display: none;
-  padding: 2.8em 1em;
+  padding: 2.5em 1em;
   position: absolute;
-  width: 420px;
+  left: 0;
+  width: 408px;
 }
 
 .todos .delete-todo.show {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
+  align-items: center;
   z-index: 1;
 }
 
 .todos .delete-todo span {
-  color: #f17f7f;
+  color: #f5bcbc;
   cursor: pointer;
 }
 
@@ -98,11 +161,19 @@ header {
   font-size: 18px;
   border-bottom: 1px solid #333;
   cursor: pointer;
-  padding: 2em 1em;
+  padding: 2em;
   position: relative;
 }
 
-.todos li.completed span {
+.todos li:last-child {
+  border-bottom: none;
+}
+
+.todos li span {
+  max-width: 80%;
+}
+
+.todos li span.completed {
   text-decoration: line-through;
 }
 
@@ -122,11 +193,11 @@ header {
 
 input[type="text"] {
   appearance: none;
-  background-color: #000;
+  background-color: #1c1c1c;
   width: calc(100% - 20px);
-  padding: 25px 10px;
+  padding: 25px 20px;
   margin-bottom: 10px;
-  border: 1px solid #333;
+  border: none;
   color: #eee;
   font-size: 18px;
   opacity: 0;
@@ -138,14 +209,14 @@ input[type="text"].show {
 }
 
 input[type="text"]:focus {
-  outline: none;
-  border-color: gold;
+  outline: 1px solid rgba(255, 217, 0, 0.308);
 }
 
 .todoapp .form {
   display: flex;
   align-items: center;
   gap: 1em;
+  padding: 0 30px;
 }
 
 .add-todo {
