@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
 import './App.css';
@@ -8,9 +8,16 @@ function App() {
   const [newTodo, setNewTodo] = useState('');
   const [showInput, setShowInput] = useState(false);
 
+  const inputEl = useRef();
+
   const handleChange = (event) => {
     setNewTodo(event.target.value);
   };
+
+  const handleShowInput = () => {
+    setShowInput(true);
+    inputEl.current.focus();
+  }
 
   const addTodo = () => {
     if (newTodo.trim() !== '') {
@@ -27,6 +34,14 @@ function App() {
     }
   };
 
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map(todo =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  };
+
   return (
     <div className="todoapp">
       <header>
@@ -36,6 +51,7 @@ function App() {
       <div className="form">
         <input
           type="text"
+          ref={inputEl}
           placeholder={`${todos.length == 0 ? "What are we doing today?" : "What else are we doing today?"}`}
           value={newTodo}
           onChange={handleChange}
@@ -47,9 +63,9 @@ function App() {
           }}
         />
 
-        <button className="btn-add" onClick={() => newTodo ? addTodo() : setShowInput(true)}>
-          { showInput && newTodo ? '✔' : '+'}
-        </button>
+        <span className="add-todo" onClick={() => newTodo ? addTodo() : handleShowInput()}>
+          { showInput && newTodo ? 'Add' : 'New'}
+        </span>
       </div>
       <ul className="todos">
         {todos.map(todo => (
@@ -58,7 +74,13 @@ function App() {
             className={classNames({ completed: todo.completed })}
             onClick={() => {}}
           >
-            {todo.text}
+            <span>{todo.text}</span>
+            <button
+              className={classNames("btn-todo_complete", { completed: todo.completed })}
+              onClick={() => toggleTodo(todo.id)}
+            >
+              ✔
+            </button>
           </li>
         ))}
       </ul>
