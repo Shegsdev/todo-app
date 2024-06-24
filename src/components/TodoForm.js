@@ -21,10 +21,7 @@ function TodoForm({ todoCount, handleSetTodos, handleError }) {
   const addTodo = () => {
     if (newTodo.trim() !== '') {
       const todo = {
-        id: uuidv4(),
-        title: newTodo,
-        completed: false,
-        date: new Date().toDateString()
+        
       };
       handleSetTodos((todos) => {
         return [todo, ...todos]
@@ -39,7 +36,7 @@ function TodoForm({ todoCount, handleSetTodos, handleError }) {
       <input
         type="text"
         ref={inputEl}
-        placeholder={`${todoCount ? "What are we doing today?" : "What else are we doing today?"}`}
+        placeholder={`${todoCount == 0 ? "What are we doing today?" : "What else are we doing today?"}`}
         value={newTodo}
         onChange={handleChange}
         className={classNames({ show: showInput })}
