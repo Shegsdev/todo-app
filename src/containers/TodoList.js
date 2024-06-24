@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
 import classNames from "classnames";
 import TodoFilters from "../components/TodoFilters";
 import TodoForm from "../components/TodoForm";
@@ -7,10 +6,8 @@ import { useAuth } from "../context/AuthContext";
 
 function Todo() {
   const [todos, setTodos] = useState([]);
-  const [newTodo, setNewTodo] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showInput, setShowInput] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState(null);
   const [showDeletePrompt, setShowDeletePrompt] = useState(false);
   const [filteredTodos, setFilteredTodos] = useState(() => todos);
@@ -39,30 +36,6 @@ function Todo() {
   useEffect(() => {
     setFilteredTodos(todos)
   }, [todos]);
-
-  const handleChange = (event) => {
-    setNewTodo(event.target.value);
-  };
-
-  const handleShowInput = () => {
-    setShowInput(true);
-  }
-
-  const addTodo = () => {
-    if (newTodo.trim() !== '') {
-      const todo = {
-        id: uuidv4(),
-        title: newTodo,
-        completed: false,
-        date: new Date().toDateString()
-      };
-      setTodos((todos) => {
-        return [todo, ...todos]
-      });
-      setNewTodo('');
-      setError(false);
-    }
-  };
 
   const toggleTodo = (e, id) => {
     e.stopPropagation();
@@ -111,10 +84,8 @@ function Todo() {
 
       <TodoForm
         todoCount={todos.length}
-        addTodo={addTodo}
-        showInput={showInput}
-        handleShowInput={handleShowInput}
-        handleChange={handleChange} />
+        handleError={setError}
+        handleSetTodos={setTodos} />
 
       { (todos.length > 0 && !loading) && (<TodoFilters filterTodos={filterTodos} />)}
 
