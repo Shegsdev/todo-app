@@ -1,14 +1,38 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import classNames from "classnames";
 import { ReactComponent as PlusIcon } from "../assets/plus.svg";
 
-function TodoForm({ todoCount, newTodo, addTodo, showInput, handleShowInput, handleChange }) {
+function TodoForm({ todoCount, handleSetTodos, handleError }) {
   const inputEl = useRef();
+  const [newTodo, setNewTodo] = useState('');
+  const [showInput, setShowInput] = useState(false);
 
-  const customShowInput = () => {
-    handleShowInput()
+
+  const handleChange = (event) => {
+    setNewTodo(event.target.value);
+  };
+
+  const handleShowInput = () => {
+    setShowInput(true);
     inputEl.current.focus();
   }
+
+  const addTodo = () => {
+    if (newTodo.trim() !== '') {
+      const todo = {
+        id: uuidv4(),
+        title: newTodo,
+        completed: false,
+        date: new Date().toDateString()
+      };
+      handleSetTodos((todos) => {
+        return [todo, ...todos]
+      });
+      setNewTodo('');
+      handleError(false);
+    }
+  };
 
   return (
     <div className="form">
@@ -24,7 +48,7 @@ function TodoForm({ todoCount, newTodo, addTodo, showInput, handleShowInput, han
         }}
       />
 
-      <span className="add-todo" onClick={() => customShowInput()}>
+      <span className="add-todo" onClick={() => handleShowInput()}>
         <PlusIcon />
       </span>
     </div>
