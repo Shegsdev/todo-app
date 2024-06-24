@@ -13,7 +13,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    if (user) navigate("/");
+    if (user) navigate("/todos");
   }, []);
 
   const handleLogin = async (e) => {
@@ -34,7 +34,7 @@ const Login = () => {
       let token;
       if (token = data?.token) {
         login(token);
-        navigate("/");
+        navigate("/todos");
       }
 
     } catch (error) {
