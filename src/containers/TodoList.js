@@ -120,6 +120,7 @@ function Todo() {
               <button
                   className={classNames("btn-todo_complete", { completed: todo.completed, hidden: (selectedTodo === todo.id) && showDeletePrompt })}
                   onClick={(e) => toggleTodo(e, todo.id)}
+                  data-testid="todo-checkbox"
               >
                   ✔
               </button>
